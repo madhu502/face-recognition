@@ -9,6 +9,12 @@ import pickle
 import time
 import cv2
 
+import serial
+
+# Setting serial port to COM4 at bard rate of 9600
+port = serial.Serial('COM7',9600)
+
+
 #Initialize 'currentname' to trigger only when a new person is identified.
 currentname = "unknown"
 #Determine faces from encodings.pickle file model created from train_model.py
@@ -49,9 +55,10 @@ while True:
 		matches = face_recognition.compare_faces(data["encodings"],
 			encoding)
 		name = "Unknown" #if face is not recognized, then print Unknown
-
+		SEND_ENCODE = str.encode('0')
 		# check to see if we have found a match
 		if True in matches:
+			SEND_ENCODE = str.encode('1')
 			# find the indexes of all matched faces then initialize a
 			# dictionary to count the total number of times each face
 			# was matched
@@ -73,7 +80,8 @@ while True:
 			if currentname != name:
 				currentname = name
 				print(currentname)
-
+		print(SEND_ENCODE)
+		port.write(SEND_ENCODE)
 		# update the list of names
 		names.append(name)
 
